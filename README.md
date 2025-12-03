@@ -43,7 +43,7 @@ A simple but powerful web-based management system for tracking components, inven
 
 ---
 
-## 🖼️ Frontend Preview
+## Frontend Preview
 
 ![Landing Page](assets/home.png)  
 *Overview / landing page*
