@@ -1,0 +1,110 @@
+# Used this code to create tables in MySQL Workbench
+
+USE capstone_db;
+
+CREATE TABLE Suppliers (
+    VendorID INT AUTO_INCREMENT PRIMARY KEY,
+    VendorName VARCHAR(100),
+    ContactInfo VARCHAR(150)
+);
+
+CREATE TABLE Supervisors (
+    SupervisorID INT AUTO_INCREMENT PRIMARY KEY,
+    SupervisorName VARCHAR(100),
+    Department VARCHAR(100),
+    ContactInfo VARCHAR(150)
+);
+
+CREATE TABLE Teams (
+    TeamID INT AUTO_INCREMENT PRIMARY KEY,
+    TeamName VARCHAR(100)
+);
+
+CREATE TABLE Students (
+    StudentID INT AUTO_INCREMENT PRIMARY KEY,
+    StudentName VARCHAR(100),
+    TeamID INT,
+    FOREIGN KEY (TeamID) REFERENCES Teams(TeamID)
+);
+
+CREATE TABLE Components (
+    ComponentID INT AUTO_INCREMENT PRIMARY KEY,
+    ComponentName VARCHAR(100),
+    Category VARCHAR(50),
+    Description VARCHAR(200),
+    Specification VARCHAR(100),
+    Quantity INT,
+    ComponentCondition VARCHAR(50),
+    UnitCost DECIMAL(10,2),
+    VendorID INT,
+    MinStockLevel INT DEFAULT 0,
+    IsConsumable CHAR(1) DEFAULT 'N',
+    FOREIGN KEY (VendorID) REFERENCES Suppliers(VendorID)
+);
+
+CREATE TABLE Projects (
+    ProjectID INT AUTO_INCREMENT PRIMARY KEY,
+    ProjectName VARCHAR(200),
+    SubmissionDate DATE,
+    SupervisorID INT,
+    FOREIGN KEY (SupervisorID) REFERENCES Supervisors(SupervisorID)
+);
+
+CREATE TABLE ProjectComponents (
+    ProjectID INT,
+    ComponentID INT,
+    PRIMARY KEY (ProjectID, ComponentID),
+    FOREIGN KEY (ProjectID) REFERENCES Projects(ProjectID),
+    FOREIGN KEY (ComponentID) REFERENCES Components(ComponentID)
+);
+
+CREATE TABLE Inventory (
+    InventoryID INT AUTO_INCREMENT PRIMARY KEY,
+    ComponentID INT,
+    StorageLocation VARCHAR(100),
+    AvailabilityStatus VARCHAR(50),
+    Remarks VARCHAR(200),
+    LastUpdated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ComponentID) REFERENCES Components(ComponentID)
+);
+
+CREATE TABLE ComponentLog (
+    LogID INT AUTO_INCREMENT PRIMARY KEY,
+    ComponentID INT,
+    LogAction VARCHAR(100),
+    LogDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Remarks VARCHAR(200),
+    TeamID INT,
+    StudentID INT,
+    FOREIGN KEY (ComponentID) REFERENCES Components(ComponentID),
+    FOREIGN KEY (TeamID) REFERENCES Teams(TeamID),
+    FOREIGN KEY (StudentID) REFERENCES Students(StudentID)
+);
+
+CREATE TABLE ComponentLending (
+    LendingID INT AUTO_INCREMENT PRIMARY KEY,
+    ComponentID INT,
+    TeamID INT,
+    Quantity INT,
+    LendDate DATE,
+    DueDate DATE,
+    ReturnDate DATE,
+    Status VARCHAR(50),
+    Remarks VARCHAR(200),
+    FOREIGN KEY (ComponentID) REFERENCES Components(ComponentID),
+    FOREIGN KEY (TeamID) REFERENCES Teams(TeamID)
+);
+
+CREATE TABLE Reimbursements (
+    ReimbursementID INT AUTO_INCREMENT PRIMARY KEY,
+    ComponentID INT,
+    TeamID INT,
+    ReimbursementStatus VARCHAR(50),
+    ApprovalAuthority VARCHAR(100),
+    ApprovalDate DATE,
+    PaymentMethod VARCHAR(50),
+    RequestedAmount DECIMAL(10,2),
+    ApprovedAmount DECIMAL(10,2),
+    FOREIGN KEY (ComponentID) REFERENCES Components(ComponentID),
+    FOREIGN KEY (TeamID) REFERENCES Teams(TeamID)
+);
